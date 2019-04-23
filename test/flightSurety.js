@@ -236,7 +236,23 @@ contract('Flight Surety Tests', async (accounts) => {
     // ASSERT
     assert.equal(result1, true, "Airline should not be able to register another airline if it hasn't been authorized");
 
+    console.log("acct1 :" + accounts[2]);
+    await config.flightSuretyData.fund({from: accounts[2], "value": 10});
+    // buy 
+    console.log("acct :" + accounts[7]);
+    await config.flightSuretyData.buy(accounts[7],accounts[2], "A2flight", "12345", {from: accounts[7], "value": 1});
+    console.log("acctxx :" );
+    await config.flightSuretyData.creditInsurees(accounts[2], "A2flight", "12345", {from: accounts[2]});
+    try{
+        await config.flightSuretyData.withdraw(accounts[2], "A2flight", "12345", {from: accounts[7]});
+    }
+    catch(err){ console.log("error: " + err);}
+    // await config.flightSuretyApp.fund.sendTransaction(airline2, {from: config.firstAirline, "value": 10});
+    // await config.flightSuretyApp.fund.sendTransaction(airline3, {from: config.firstAirline, "value": 10});
+    // await config.flightSuretyApp.fund.sendTransaction(airline4, {from: config.firstAirline, "value": 10});
+
   });
  
+
 
 });

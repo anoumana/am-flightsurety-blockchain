@@ -268,7 +268,7 @@ contract FlightSuretyData {
                             external
                             payable
                             requireMinimumFund(1)
-                            requireRegisteredAirline
+//                            requireRegisteredAirline
                             requireIsOperational
     {
         //maybe add timestamp later
@@ -325,7 +325,7 @@ contract FlightSuretyData {
         bytes32 passengerKey = keccak256(abi.encodePacked(passenger, airlines, flight, timestamp));
         uint256 amountToBeCredited = creditedPassengers[passengerKey];
         require(amountToBeCredited > 0, "There is no amount to be credited");
-        require(amountToBeCredited <= registeredAirlines[airlines].insuranceFund, "Airlines doesn't have fund");
+        require(amountToBeCredited > registeredAirlines[airlines].insuranceFund, "Airlines doesn't have fund");
         //make the amount to be credited 0 - to avoid reentrancy
         creditedPassengers[passengerKey] = 0;
         msg.sender.transfer(amountToBeCredited);
