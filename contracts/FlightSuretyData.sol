@@ -216,11 +216,13 @@ contract FlightSuretyData {
                             external
                            requireIsOperational
                            requireAlreadyNotRegistered (newAirlines)  // require airlines is not already registered
-                            returns(bool success, uint256 votesNeeded)
+                           // returns(bool success, uint256 votesNeeded)
+                           returns( uint256 votesNeeded)
     {
         // if the # of registered airlines is less than 5, one of the registered airlines can register another airlines
         bool authorized = false;
-        success = false;
+        votesNeeded = 0;
+        //success = false;
         if(registeredAirlineList.length <= 2){
             if(registeredAirlines[msg.sender].isRegistered)
             {
@@ -246,7 +248,7 @@ contract FlightSuretyData {
                 airlinesName: airlinesName, 
                 insuranceFund: 0
             });
-            success = true;
+            //success = true;
             votesNeeded = 0;
            registrationAuthorizers[newAirlines] = new address[](0);
            emit RegisteredAirline(airlinesName, newAirlines);
