@@ -56,7 +56,7 @@ contract FlightSuretyApp {
         _;
     }
 
-    function toString(address x) internal returns (string memory) {
+    function toString(address x) internal pure returns (string memory) {
         bytes memory b = new bytes(20);
         for (uint i = 0; i < 20; i++)
             b[i] = byte(uint8(uint(x) / (2**(8*(19 - i)))));
@@ -84,11 +84,11 @@ contract FlightSuretyApp {
     /*                                       UTILITY FUNCTIONS                                  */
     /********************************************************************************************/
 
-    function getRegisteredAirlines( ) external returns (address[] memory _registeredAirlineList){
+    function getRegisteredAirlines( ) external view returns (address[] memory _registeredAirlineList){
         return flightSuretyData.getRegisteredAirlines();
     }
 
-    function isAirlineRegistered(address airlineAddress) external returns (bool status){
+    function isAirlineRegistered(address airlineAddress) external view returns (bool status){
         return flightSuretyData.isAirlineRegistered(airlineAddress);
     }
     function isOperational() 
@@ -137,11 +137,71 @@ contract FlightSuretyApp {
                                 address newAirlines // airlines that needs to be registered
                             )
                             external
-                            returns(bool success, uint256 votesNeeded)
+                            returns( int votesNeeded)
     {
         return flightSuretyData.registerAirline(airlinesName, newAirlines);
     }
 
+    function fund
+                            (   
+                            )
+                            public
+                            payable
+                            returns (uint)
+    {
+        return flightSuretyData.fund.value(msg.value)();
+    }
+    function getRegisteredAirlineFund(address airline ) external view returns (uint){
+        return flightSuretyData.getRegisteredAirlineFund(airline);
+    }
+
+    function buy
+                            ( 
+                               address passenger,
+                                address airlines,
+                                string flight,
+                                uint256 timestamp
+                            )
+                            external
+                            payable
+                            returns (uint256)
+    {
+        return flightSuretyData.buy.value(msg.value)(passenger, airlines, flight, timestamp);
+    }
+
+    function getInsuranceAmount(address passenger, address airlines, string flight, uint256 timestamp) external  returns (uint256)
+    {
+        return flightSuretyData.getInsuranceAmount(passenger, airlines, flight, timestamp);
+    }
+
+    function getCreditedInsuranceAmount(address passenger, address airlines, string flight, uint256 timestamp) external  returns (uint256)
+    {
+        return flightSuretyData.getCreditedInsuranceAmount(passenger, airlines, flight, timestamp);
+    }
+
+
+    function creditInsurees
+                                (
+                                address airlines,
+                                string flight,
+                                uint256 timestamp
+                                )
+                                external
+                                returns (int)
+{
+    return flightSuretyData.creditInsurees(airlines, flight, timestamp);
+}
+
+    function withdraw (
+                        address airlines,
+                        string flight,
+                        uint256 timestamp
+                    )
+                    external
+                    returns (uint256)
+{
+    return flightSuretyData.withdraw(airlines, flight, timestamp);
+}
 
    /**
     * @dev Register a future flight for insuring.
@@ -372,7 +432,19 @@ contract FlightSuretyData
 {
     function isOperational() external  view  returns(bool);
     function setOperatingStatus( bool ) external;
-    function registerAirline( string  airlinesName, address newAirlines ) external returns(bool success, uint256 votesNeeded);
+    function registerAirline( string  airlinesName, address newAirlines ) external returns( int votesNeeded);
     function isAirlineRegistered(address airlineAddress) external view returns (bool status) ;
     function getRegisteredAirlines( ) external view  returns (address[] );
+
+    function buy(  address passenger, address airlines, string flight, uint256 timestamp) external  payable returns (uint256);
+    function getInsuranceAmount(address passenger, address airlines, string flight, uint256 timestamp) external  payable returns (uint256);
+
+    function fund() external payable  returns (uint);
+    function getRegisteredAirlineFund(address airline ) external view returns (uint);
+
+    function creditInsurees(address airlines, string flight, uint256 timestamp) external returns (int);
+    function getCreditedInsuranceAmount(address passenger, address airlines, string flight, uint256 timestamp) external  payable returns (uint256);
+    
+    function withdraw (address airlines, string flight, uint256 timestamp) external returns (uint256);
+    
 }
