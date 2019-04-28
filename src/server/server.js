@@ -50,7 +50,7 @@ async function registerAirlines() {
   console.log("acct 0: " + accounts[0]);
   
 try{
-    let result = await flightSuretyData.methods.isOperational.call({from:accounts[0],"gas": 4712300, "gasPrice": 100000 });
+    let result = await flightSuretyData.methods.isOperational().call({from:accounts[0],"gas": 4712300, "gasPrice": 100000 });
     console.log("xycvdsd : " + result);
 }catch(error ){console.log("Err" + error);}
 
@@ -129,7 +129,7 @@ flightSuretyApp.events.FlightStatusInfo({
   }, function (error, event) {
     console.log("eventlistener :" + event);
     if (error) {
-      console.log("eventlistener error:" +error);
+      console.log("eventlistener error:" +error.message);
     }
     else {
       let airline = event.returnValues.airline; 
@@ -146,7 +146,7 @@ flightSuretyApp.events.OracleReport({
   }, function (error, event) {
     console.log("oracleReport eventlistener :" + event);
     if (error) {
-      console.log(error);
+      console.log(error.message);
     }
     else {
       let airline = event.returnValues.airline; 
