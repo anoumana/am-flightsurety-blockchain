@@ -21,54 +21,47 @@
 
     <main class="container">
 
-        <div id="display-wrapper" class="top-20">
-        </div>
-        <div class="row top-20">
-            <label class="form">Flight</label> <input type="text" id="flight-number"> <btn class="btn btn-primary" id="submit-oracle">Submit to Oracles</btn>
-        </div>
+        <table>
+            <tr>
+                <td width="50%">
+                    <span id="display-wrapper" class="top-20">
+                    </span>
+                </td>
+                <td>
+                    <span>
+                        <btn class="btn btn-primary" id="change-op-status">Change Operational Status</btn>
+                        <btn class="btn btn-primary" id="find-op-status">find Operational Status</btn>
+                    </span>
+                </td>
+            </tr>
+        </table>
+        <table>
+            <tr>
+                <td>
+                    <label class="form">Purchase Insurance </label>  
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="text" id="passengerAddress" placeholder="Passenger Address">
+                </td>
+                <td>
+                    <select id="flightName" >
+                        <option value="AM123">AM123</option>
+                        <option value="AM234">AM234</option>
+                        <option value="AM345">AM345</option>
+                        <option value="AM456">AM456</option>
+                        <option value="AM567">AM567</option>
+                    </select>
+                </td>
+                <td>
+                    <btn class="btn btn-primary" id="buyInsurance">Buy Insurance</btn>
+                </td>
+            </tr>
 
-    </br>
-
-    <div id="display-wrapper" class="top-20"></div>
-    <h4>Register Airline</h4>
-    <div class="row top-20">
-        <label class="form">Airline Address</label> <input type="text" id="airlineAddress"> 
-        <p id="display-votes"></p>
-        <btn class="btn btn-primary" id="isRegistered">Is Registered</btn>
-    </div>
+        </table>
 
         <div id="display-wrapper" class="top-20"></div>
-        <h4>Register Airline</h4>
-        <div class="row top-20">
-            <label class="form">Airline Name</label> <input type="text" id="airlineName"> 
-            <label class="form">Airline Address</label> <input type="text" id="airlineAddress"> 
-            <label class="form">Approver Address</label> <input type="text" id="approverAddress"> 
-            <p id="display-votes"></p>
-            <btn class="btn btn-primary" id="registerAirline">Register Airlines</btn>
-        </div>
-    </br>
-        <div id="display-wrapper" class="top-20"></div>
-        <h4>Fund Airlines for Insurance Money</h4>
-        <div class="row top-20">
-            <label class="form">Amount</label> <input type="text" id="airlineFundAmount"> 
-            <label class="form">Airline Address</label> <input type="text" id="fundedAirlineAddress"> 
-            <btn class="btn btn-primary" id="fundAirlines">Fund the Airlines</btn>
-        </div>
-    </br>
-    <div id="display-wrapper" class="top-20"></div>
-    <h4>Passengers Buy Insurance for Flights</h4>
-    <div class="row top-20">
-        <label class="form">Passenger Address</label> <input type="text" id="passengerAddress"> 
-        <label class="form">Insurance Amount</label> <input type="text" id="flightInsuranceAmount"> 
-        <label class="form">Airline Address</label> <input type="text" id="insAirlineAddress"> 
-    </div></br>
-    <div>
-        <label class="form">Flight Name</label> <input type="text" id="flightName"> 
-        <label class="form">TimeStamp</label> <input type="text" id="flightTime"> 
-        <btn class="btn btn-primary" id="buyInsurance">Buy Insurance</btn>
-    </div>
-</br>
-    <div id="display-wrapper" class="top-20"></div>
     <h4>Credit all Passengers of the Flight</h4>
     <div class="row top-20">
         <label class="form">Flight Name</label> <input type="text" id="creditFlightName"> 
