@@ -7,8 +7,12 @@ contract('Flight Surety Tests', async (accounts) => {
   var config;
   before('setup contract', async () => {
     config = await Test.Config(accounts);
-    await config.flightSuretyData.authorizeCaller(config.flightSuretyApp.address);
-  });
+    try {
+        await config.flightSuretyData.authorizeCaller(config.flightSuretyApp.address);
+        console.log("Auth")
+    }
+    catch(error) { console.log ("auth err :" +error);}
+    });
 
   /****************************************************************************************/
   /* Operations and Settings                                                              */

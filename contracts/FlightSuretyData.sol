@@ -43,7 +43,7 @@ contract FlightSuretyData {
 
     mapping(address => address[]) registrationAuthorizers; // Airlines that have authorized the registration
 
-    mapping(address => uint256) private authorizedCallers;
+    mapping(address => bool)  authorizedCallers;
 
     //mapping(bytes32 => mapping(address => uint256)) insuredPassengers;
     mapping(bytes32 => Passenger) insuredPassengers;
@@ -71,7 +71,7 @@ contract FlightSuretyData {
                                 public 
     {
         contractOwner = tx.origin;
-        authorizedCallers[contractOwner] = 1;
+        //authorizedCallers[contractOwner] = 1;
         operational = true;
         registeredAirlineList.push(firstAirlineAddress);
         registeredAirlines[firstAirlineAddress]  =  Airlines({
@@ -119,7 +119,7 @@ contract FlightSuretyData {
 
     modifier requireAuthorizedCaller()
     {
-        require(authorizedCallers[msg.sender] == 1, "Authorized caller"  );
+        require(authorizedCallers[msg.sender] == true , "Authorized caller"  );
         _;
     }
 
@@ -140,25 +140,21 @@ contract FlightSuretyData {
     /*                                       UTILITY FUNCTIONS                                  */
     /********************************************************************************************/
 
+    //function addAddress(address authadd ) public {authorizedCallers[authadd] = true;}
 
-    function authorizeCaller
-                            (
-                                address callerAddress
-                            )
-                            external
-                            requireContractOwner
+    function authorizeCaller(address authCaller ) public  requireContractOwner
     {
-        authorizedCallers[callerAddress] = 1;
+        authorizedCallers[authCaller] = true;
     }
 
     function deauthorizeCaller
                             (
-                                address callerAddress
+                                address authCaller
                             )
-                            external
+                            public
                             requireContractOwner
     {
-        delete authorizedCallers[callerAddress];
+        delete authorizedCallers[authCaller];
     }
 
 
