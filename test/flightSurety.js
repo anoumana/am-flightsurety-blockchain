@@ -296,7 +296,7 @@ it('test creditInsurees works', async () => {
     let amount = 0;
 
     try{
-        await config.flightSuretyApp.creditInsurees(accounts[2], "A2flight", "12345", {from: accounts[2]});
+        await config.flightSuretyApp.creditInsurees(accounts[2], "A2flight", "12345",15,10, {from: accounts[2]});
         //console.log("credit inuserees :" + numOfPassengers);
 
         amount = await config.flightSuretyApp.getInsuranceAmount.call(accounts[6],accounts[2], "A2flight", "12345");
@@ -319,7 +319,7 @@ it('test withdraw works', async () => {
     let amount = 10;
 
     try{
-        await config.flightSuretyApp.withdraw(accounts[2], "A2flight", "12345", {from: accounts[6]});
+        await config.flightSuretyApp.withdraw(accounts[6], accounts[2], "A2flight", "12345", {from: accounts[6]});
 
         amount = await config.flightSuretyApp.getCreditedInsuranceAmount.call(accounts[6],accounts[2], "A2flight", "12345");
         console.log("withdraw :" + amount);

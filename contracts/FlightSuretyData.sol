@@ -276,21 +276,23 @@ contract FlightSuretyData {
                             returns(uint256)
     {
         //maybe add timestamp later
-       bytes32 key = keccak256(abi.encodePacked( airlines, flight, timestamp));
+       bytes32 flightKey = keccak256(abi.encodePacked( airlines, flight, timestamp));
+       bytes32 passengerKey = keccak256(abi.encodePacked( passenger, airlines, flight, timestamp));
    
-        Passenger storage existingPassenger = insuredPassengers[key];
+        Passenger storage existingPassenger = insuredPassengers[passengerKey];
         require(existingPassenger.insuranceAmount <= 0, "Passenger already bought insurance for the flight");
 
-        insuredPassengers[key] =  Passenger({
+        insuredPassengers[passengerKey] =  Passenger({
             passengerAddress: passenger,
             insuranceAmount: msg.value
         });
-        insuredPassengerList[key].push(passenger);
-        return insuredPassengers[key].insuranceAmount;
+        //add all insured passenger address  to the list for that specific flight
+        insuredPassengerList[flightKey].push(passenger);
+        return insuredPassengers[passengerKey].insuranceAmount;
     }
 
     function getInsuranceAmount ( 
-                               address passenger,
+                                address passenger,
                                 address airlines,
                                 string flight,
                                 uint256 timestamp
@@ -301,7 +303,7 @@ contract FlightSuretyData {
                             returns(uint256)
     {
         //maybe add timestamp later
-       bytes32 key = keccak256(abi.encodePacked( airlines, flight, timestamp));
+       bytes32 key = keccak256(abi.encodePacked( passenger, airlines, flight, timestamp));
    
         return insuredPassengers[key].insuranceAmount;
     }
@@ -313,7 +315,9 @@ contract FlightSuretyData {
                                 (
                                 address airlines,
                                 string flight,
-                                uint256 timestamp
+                                uint256 timestamp,
+                                uint256 suretyAmtMultiplier,
+                                uint256 suretyAmtDivider
                                 )
                                 external
                                 requireIsOperational
@@ -321,20 +325,19 @@ contract FlightSuretyData {
                                 returns (int numOfPassengers)
     {
         
-       bytes32 key = keccak256(abi.encodePacked( airlines, flight, timestamp));
+       bytes32 flightKey = keccak256(abi.encodePacked( airlines, flight, timestamp));
+       bytes32 passengerKey = keccak256(abi.encodePacked( passenger, airlines, flight, timestamp));
 
-        address[] storage passengers = insuredPassengerList[key];
+        address[] storage passengers = insuredPassengerList[flightKey];
         numOfPassengers = 0;
 
         for (uint index=0; index < passengers.length; index++) {
             address passenger = passengers[index];
-            uint256 insurancePaid = insuredPassengers[key].insuranceAmount;
+            uint256 insurancePaid = insuredPassengers[passengerKey].insuranceAmount;
             require(insurancePaid > 0, "There is no insurance bought to refund");
             
             // if the passenger has bought insurance, credit their account 1.5*insurance
-            bytes32 passengerKey = keccak256(abi.encodePacked(passenger, airlines, flight, timestamp));
-
-            creditedPassengers[passengerKey] = insurancePaid.mul(2);
+            creditedPassengers[passengerKey] = insurancePaid.mul(suretyAmtMultiplier).div(suretyAmtDivider);
             numOfPassengers++;
             //emit CreditInsured(passenger, airlines, flight, timestamp, insuredPassengers[key].insuranceAmount);
         }
@@ -362,6 +365,7 @@ contract FlightSuretyData {
      *
     */
     function withdraw (
+//                        address passenger,
                         address airlines,
                         string flight,
                         uint256 timestamp

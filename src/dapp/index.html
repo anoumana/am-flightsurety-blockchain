@@ -43,49 +43,62 @@
             </tr>
             <tr>
                 <td>
-                    <input type="text" id="passengerAddress" placeholder="Passenger Address">
+                    <input type="text" id="buyPassengerAddress" placeholder="Passenger Address">
                 </td>
                 <td>
-                    <select id="flightName" >
+                    <select id="buyFlightName" >
                         <option value="AM123">AM123</option>
                         <option value="AM234">AM234</option>
                         <option value="AM345">AM345</option>
                         <option value="AM456">AM456</option>
                         <option value="AM567">AM567</option>
                     </select>
-                </td>
+                </td><td></td>
                 <td>
                     <btn class="btn btn-primary" id="buyInsurance">Buy Insurance</btn>
                 </td>
             </tr>
-
+            <tr></td></tr>
+            <tr>
+                <td>
+                    <label class="form">Check Flight Status</label>
+                </td>
+                <td>
+                    <select id="checkFlightName">
+                        <option value="AM123">AM123</option>
+                        <option value="AM234">AM234</option>
+                        <option value="AM345">AM345</option>
+                        <option value="AM456">AM456</option>
+                        <option value="AM567">AM567</option>
+                    </select>
+                </td><td></td>
+                <td>
+                    <btn class="btn btn-primary" id="checkFlightStatus">Check Flight Status</btn>
+                </td>
+            </tr><tr></tr>
+            <tr>
+                    <td>
+                        <label class="form">Withdraw Flight Surety Amount</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <input type="text" id="wdPassengerAddress" placeholder="Passenger Address">
+                    </td>
+                    <td>
+                        <select id="wdFlightName" >
+                            <option value="AM123">AM123</option>
+                            <option value="AM234">AM234</option>
+                            <option value="AM345">AM345</option>
+                            <option value="AM456">AM456</option>
+                            <option value="AM567">AM567</option>
+                        </select>
+                    </td><td></td>
+                        <td>
+                        <btn class="btn btn-primary" id="withdraw">Withdraw</btn>
+                    </td>
+                </tr>
         </table>
-
-        <div id="display-wrapper" class="top-20"></div>
-    <h4>Credit all Passengers of the Flight</h4>
-    <div class="row top-20">
-        <label class="form">Flight Name</label> <input type="text" id="creditFlightName"> 
-        <label class="form">Airline Address</label> <input type="text" id="creditAirlineAddress"> 
-        <label class="form">TimeStamp</label> <input type="text" id="creditFlightTime"> 
-    </div> </br>
-    <div>
-        <btn class="btn btn-primary" id="creditInsurees">Credit Insured Passengers</btn>
-    </div>
-    </br>
-
-    </br>
-    <div id="display-wrapper" class="top-20"></div>
-    <h4>Withdraw Flight Surety Amount</h4>
-    <div class="row top-20">
-        <label class="form">Passenger Address</label> <input type="text" id="wdPassengerAddress"> 
-        <label class="form">Airline Address</label> <input type="text" id="wdAirlineAddress"> 
-        <label class="form">Flight Name</label> <input type="text" id="wdFlightName"> 
-        <label class="form">TimeStamp</label> <input type="text" id="wdFlightTime"> 
-    </div> </br>
-    <div>
-        <btn class="btn btn-primary" id="withdraw">Withdraw</btn>
-    </div>
-    </br>
 
 </main>
 

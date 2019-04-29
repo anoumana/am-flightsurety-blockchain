@@ -23,21 +23,12 @@ console.log(config.url);
 let web3 = new Web3(new Web3.providers.WebsocketProvider(config.url.replace('http', 'ws')));
 web3.eth.defaultAccount = web3.eth.accounts[0];
 
-let accounts =  web3.eth.getAccounts(); 
 var registeredOracles = new Map();
 let registrationFee = 0;
 
 let flightSuretyApp = new web3.eth.Contract(FlightSuretyApp.abi, config.appAddress);
 let flightSuretyData = new web3.eth.Contract(FlightSuretyData.abi, config.dataAddress);
-
-//setupAppContractForData();
-// registerAirlines();
-// registerOracles();
-
-// async function setupAppContractForData() {
-//   await flightSuretyData.methods.authorizeCaller(config.appAddress).send({from:accounts[0],"gas": 471230, "gasPrice": 100000 }).then(`Done Authorizing Caller ${config.appAddress}`).catch(`ERROR Authorizing Caller ${config.appAddress}`);
-
-// }
+var accounts;
 
 async function registerAirlines() {
   try{
@@ -55,7 +46,7 @@ try{
 }catch(error ){console.log("Err" + error);}
 
     try{
-      await flightSuretyData.methods.authorizeCaller(config.appAddress,{from:accounts[0],"gas": 4712300, "gasPrice": 100000 })
+      await flightSuretyData.methods.authorizeCaller(config.appAddress).send({from:accounts[0],"gas": 4712300, "gasPrice": 100000 })
       console.log("Auth" );
   }
   catch(error){console.log("auth caller error :" + error)}
@@ -65,20 +56,20 @@ try{
 
   try {
   let val =  web3.utils.toWei("10",'ether');
-  await flightSuretyApp.methods.fund({from:accounts[1],value:val,"gas": 4712300, "gasPrice": 100000  })
+  await flightSuretyApp.methods.fund().send({from:accounts[1],value:val,"gas": 4712300, "gasPrice": 100000  })
     console.log("funded A1 airlines");
   }
   catch(error){console.log("fund call error :" + error)}
 
   try {
-    await flightSuretyApp.methods.registerAirline(accounts[2], "A2 airlines",{from:accounts[1],"gas": 4712300, "gasPrice": 100000 })
+    await flightSuretyApp.methods.registerAirline("A2 airlines", accounts[2] ).send({from:accounts[1],"gas": 4712300, "gasPrice": 100000 })
     console.log("registered A2 airlines");
   }
   catch(error){console.log("register A2 call error :" + error)}
 
   try {
     let val =  web3.utils.toWei("10",'ether');
-    await flightSuretyApp.methods.fund({from:accounts[2],value:val,"gas": 4712300, "gasPrice": 100000  })
+    await flightSuretyApp.methods.fund().send({from:accounts[2],value:val,"gas": 4712300, "gasPrice": 100000  })
     console.log("funded A2 airlines");
   }
   catch(error){console.log("fund A2 call error :" + error)}
@@ -99,7 +90,7 @@ async function registerOracles() {
       accounts.forEach(async acct => {
         //for each account register an oracle
         try { 
-        let r = await flightSuretyApp.methods.registerOracle({
+        let r = await flightSuretyApp.methods.registerOracle().send({
             "from": acct,
             "value": registrationFee,
             "gas": 4712300,  // make sure enough gas is put in, otherwise it fails
@@ -111,8 +102,7 @@ async function registerOracles() {
         //set them in the map to be used for the event listener
         registeredOracles.set(acct,result);
         console.log(`Oracle ${acct} registered: ${registeredOracles.get(acct)[0]}, 
-          ${registeredOracles.get(acct)[1]}, ${registeredOracles.get(acct)[2]}, 
-          ${registeredOracles.get(acct)[3]}, ${registeredOracles.get(acct)[4]}`);
+          ${registeredOracles.get(acct)[1]}, ${registeredOracles.get(acct)[2]}`);
       } catch (error) 
       {
         console.log("oracle registration : " + error); 

@@ -184,15 +184,18 @@ contract FlightSuretyApp {
                                 (
                                 address airlines,
                                 string flight,
-                                uint256 timestamp
+                                uint256 timestamp,
+                                uint256 suretyAmtMultiplier,
+                                uint256 suretyAmtDivider
                                 )
                                 external
                                 returns (int)
 {
-    return flightSuretyData.creditInsurees(airlines, flight, timestamp);
+    return flightSuretyData.creditInsurees(airlines, flight, timestamp, suretyAmtMultiplier, suretyAmtDivider);
 }
 
     function withdraw (
+//                        address passenger,
                         address airlines,
                         string flight,
                         uint256 timestamp
@@ -200,7 +203,7 @@ contract FlightSuretyApp {
                     external
                     returns (uint256)
 {
-    return flightSuretyData.withdraw(airlines, flight, timestamp);
+    return flightSuretyData.withdraw( airlines, flight, timestamp);
 }
 
    /**
@@ -222,14 +225,19 @@ contract FlightSuretyApp {
     */  
     function processFlightStatus
                                 (
-                                    address airline,
+                                    address airlines,
                                     string memory flight,
                                     uint256 timestamp,
                                     uint8 statusCode
                                 )
                                 internal
-                                pure
     {
+        if(statusCode == STATUS_CODE_LATE_AIRLINE){
+            uint256 suretyAmtMultiplier = 15;
+            uint256 suretyAmtDivider = 10;
+            flightSuretyData.creditInsurees(airlines, flight, timestamp, suretyAmtMultiplier, suretyAmtDivider);
+        }
+        
     }
 
 
@@ -442,9 +450,9 @@ contract FlightSuretyData
     function fund() external payable  returns (uint);
     function getRegisteredAirlineFund(address airline ) external view returns (uint);
 
-    function creditInsurees(address airlines, string flight, uint256 timestamp) external returns (int);
+    function creditInsurees(address airlines, string flight, uint256 timestamp, uint256 suretyAmtMultiplier, uint256 suretyAmtDivider) external returns (int);
     function getCreditedInsuranceAmount(address passenger, address airlines, string flight, uint256 timestamp) external  payable returns (uint256);
     
-    function withdraw (address airlines, string flight, uint256 timestamp) external returns (uint256);
+    function withdraw ( address airlines, string flight, uint256 timestamp) external returns (uint256);
     
 }
