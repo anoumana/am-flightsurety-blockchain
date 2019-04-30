@@ -326,18 +326,20 @@ contract FlightSuretyData {
     {
         
        bytes32 flightKey = keccak256(abi.encodePacked( airlines, flight, timestamp));
-       bytes32 passengerKey = keccak256(abi.encodePacked( passenger, airlines, flight, timestamp));
+       bytes32 passengerKey = 0;
 
         address[] storage passengers = insuredPassengerList[flightKey];
         numOfPassengers = 0;
 
         for (uint index=0; index < passengers.length; index++) {
             address passenger = passengers[index];
+            passengerKey = keccak256(abi.encodePacked( passenger, airlines, flight, timestamp));
             uint256 insurancePaid = insuredPassengers[passengerKey].insuranceAmount;
             require(insurancePaid > 0, "There is no insurance bought to refund");
             
             // if the passenger has bought insurance, credit their account 1.5*insurance
             creditedPassengers[passengerKey] = insurancePaid.mul(suretyAmtMultiplier).div(suretyAmtDivider);
+            insuredPassengers[passengerKey].insuranceAmount = 0;
             numOfPassengers++;
             //emit CreditInsured(passenger, airlines, flight, timestamp, insuredPassengers[key].insuranceAmount);
         }
@@ -365,7 +367,7 @@ contract FlightSuretyData {
      *
     */
     function withdraw (
-//                        address passenger,
+                        address passenger,
                         address airlines,
                         string flight,
                         uint256 timestamp
@@ -375,7 +377,7 @@ contract FlightSuretyData {
                     requireAuthorizedCaller
                     returns (uint256)
     {
-        address passenger = tx.origin;
+        //address passenger = tx.origin;
         bytes32 passengerKey = keccak256(abi.encodePacked(passenger, airlines, flight, timestamp));
         uint256 amountToBeCredited = creditedPassengers[passengerKey];
         require(amountToBeCredited > 0, "There is no amount to be credited");

@@ -117,16 +117,16 @@ registerOracles();
 flightSuretyApp.events.FlightStatusInfo({
   fromBlock: "latest"
   }, function (error, event) {
-    console.log("eventlistener :" + event);
+    console.log("*************eventlistener :" + event);
     if (error) {
-      console.log("eventlistener error:" +error.message);
+      console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$eventlistener error:" +error.message);
     }
     else {
       let airline = event.returnValues.airline; 
       let flight = event.returnValues.flight;
       let timestamp = event.returnValues.timestamp;
       let flightStatus = event.returnValues.status;
-      console.log(` Flight Status Info: ${airline}, ${flight}, ${timestamp}, ${flightStatus}`);
+      console.log(`%%%%%%%%%%%% Flight Status Info: ${airline}, ${flight}, ${timestamp}, ${flightStatus}`);
     }
   }
 )
@@ -149,6 +149,25 @@ flightSuretyApp.events.OracleReport({
   }
 )
 
+flightSuretyApp.events.contractLog({
+  fromBlock: "latest"
+  }, function (error, event) {
+    console.log("contractLog eventlistener :" + event);
+    if (error) {
+      console.log(error.message);
+    }
+    else {
+      let logMsg = event.returnValues.logMsg; 
+      let airline = event.returnValues.airline; 
+      let flight = event.returnValues.flight;
+      let timestamp = event.returnValues.timestamp;
+      let flightStatus = event.returnValues.status;
+      let index = event.returnValues.index;
+      
+      console.log(` contractLog: ${logMsg}, ${airline}, ${flight}, ${timestamp}, ${flightStatus}, ${index}`);
+    }
+  }
+)
 
 
 
@@ -170,7 +189,8 @@ flightSuretyApp.events.OracleRequest({
           console.log(acct + ' = ' + value);
           for (var i = 0; i < value.length; i++) {
             console.log(`Oracle Req before submit:${value[i]}, "${airline}", ${flight}, ${timestamp}, ${STATUS_CODE_LATE_AIRLINE}`);
-            flightSuretyApp.methods.submitOracleResponse(value[i], airline, flight, timestamp, STATUS_CODE_LATE_AIRLINE).call({ from: acct })
+            flightSuretyApp.methods.submitOracleResponse(value[i], airline, flight, timestamp, STATUS_CODE_LATE_AIRLINE)
+            .send({ from: acct,  gas:4712300, gasprice: 100000 })
               .then(console.log(`Oracle response submited: ${acct} ${value[i]}`))
               .catch(function(error) {
               console.log(`${error} Oracle response Error for: ${acct} ${i}`);

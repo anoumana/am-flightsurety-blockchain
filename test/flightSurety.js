@@ -292,7 +292,7 @@ it('test buy works', async () => {
 });
  
 it('test creditInsurees works', async () => {
-    let val =  web3.utils.toWei("4",'ether');
+    let val =  web3.utils.toWei("3",'ether');
     let amount = 0;
 
     try{

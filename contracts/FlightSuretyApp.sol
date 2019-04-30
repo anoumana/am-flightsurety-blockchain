@@ -27,7 +27,9 @@ contract FlightSuretyApp {
     address private contractOwner;          // Account used to deploy contract
 
     FlightSuretyData flightSuretyData;
- 
+
+    event contractLog(string logMsg, address airline, string flight, uint256 timestamp, uint8 status, uint8 index);
+
     /********************************************************************************************/
     /*                                       FUNCTION MODIFIERS                                 */
     /********************************************************************************************/
@@ -191,11 +193,13 @@ contract FlightSuretyApp {
                                 external
                                 returns (int)
 {
+    emit contractLog("in creditInsurees",  airlines,  flight,  timestamp,  0,  0);
+
     return flightSuretyData.creditInsurees(airlines, flight, timestamp, suretyAmtMultiplier, suretyAmtDivider);
 }
 
     function withdraw (
-//                        address passenger,
+                        address passenger,
                         address airlines,
                         string flight,
                         uint256 timestamp
@@ -203,7 +207,7 @@ contract FlightSuretyApp {
                     external
                     returns (uint256)
 {
-    return flightSuretyData.withdraw( airlines, flight, timestamp);
+    return flightSuretyData.withdraw( passenger, airlines, flight, timestamp);
 }
 
    /**
@@ -232,9 +236,13 @@ contract FlightSuretyApp {
                                 )
                                 internal
     {
+        emit contractLog("in processFlightStatus1",  airlines,  flight,  timestamp,  statusCode,  0);
+
         if(statusCode == STATUS_CODE_LATE_AIRLINE){
             uint256 suretyAmtMultiplier = 15;
             uint256 suretyAmtDivider = 10;
+            emit contractLog("in processFlightStatus2",  airlines,  flight,  timestamp,  statusCode,  0);
+
             flightSuretyData.creditInsurees(airlines, flight, timestamp, suretyAmtMultiplier, suretyAmtDivider);
         }
         
@@ -354,21 +362,35 @@ contract FlightSuretyApp {
                         )
                         external
     {
+        emit contractLog("in submitOracle",  airline,  flight,  timestamp,  statusCode,  index);
+
         require((oracles[msg.sender].indexes[0] == index) || (oracles[msg.sender].indexes[1] == index) || (oracles[msg.sender].indexes[2] == index), "Index does not match oracle request");
 
+        emit contractLog("in submitOracle2",  airline,  flight,  timestamp,  statusCode,  index);
 
         bytes32 key = keccak256(abi.encodePacked(index, airline, flight, timestamp)); 
         require(oracleResponses[key].isOpen, "Flight or timestamp do not match oracle request");
+        emit contractLog("in submitOracle3",  airline,  flight,  timestamp,  statusCode,  index);
 
         oracleResponses[key].responses[statusCode].push(msg.sender);
+        uint8 respLength = uint8(oracleResponses[key].responses[statusCode].length);
+        emit contractLog("in submitOracle after push",  msg.sender,  flight,  timestamp,  statusCode,  
+        respLength);
 
         // Information isn't considered verified until at least MIN_RESPONSES
         // oracles respond with the *** same *** information
-        emit OracleReport(airline, flight, timestamp, statusCode);
-        if (oracleResponses[key].responses[statusCode].length >= MIN_RESPONSES) {
+        emit OracleReport(airline, flight, timestamp, statusCode );
+        emit contractLog("in submitOracle after oracleRep emit",  airline,  flight,  timestamp,  statusCode,  index);
+
+        //if (oracleResponses[key].responses[statusCode].length >= MIN_RESPONSES) 
+        if (respLength >= 3) 
+        {
+
+        emit contractLog("in submitOracle in if cond",  airline,  flight,  timestamp,  statusCode,  index);
 
             emit FlightStatusInfo(airline, flight, timestamp, statusCode);
-
+            //close the response
+            oracleResponses[key].isOpen = false;
             // Handle flight status as appropriate
             processFlightStatus(airline, flight, timestamp, statusCode);
         }
@@ -453,6 +475,6 @@ contract FlightSuretyData
     function creditInsurees(address airlines, string flight, uint256 timestamp, uint256 suretyAmtMultiplier, uint256 suretyAmtDivider) external returns (int);
     function getCreditedInsuranceAmount(address passenger, address airlines, string flight, uint256 timestamp) external  payable returns (uint256);
     
-    function withdraw ( address airlines, string flight, uint256 timestamp) external returns (uint256);
+    function withdraw ( address passenger, address airlines, string flight, uint256 timestamp) external returns (uint256);
     
 }

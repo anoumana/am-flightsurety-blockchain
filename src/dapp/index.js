@@ -37,6 +37,47 @@ import './flightsurety.css';
             });
         })
 
+        // Check Flight Insurance
+        DOM.elid('chkInsurance').addEventListener('click', () => {
+            let flightName = DOM.elid('buyFlightName').value;
+            let passengerAddress = DOM.elid('buyPassengerAddress').value;
+            console.log("chk ins : " + passengerAddress + ":" +flightName );
+                // Write transaction
+            contract.checkInsAmount( passengerAddress,  flightName, function(error, result) {
+                display('chkInsurance', 'chkInsurance', [ { label: 'chkInsurance Status', error: error, value: result} ]);
+                console.log("chkInsurance error : " + error);
+                console.log("chkInsurance result : " + result);
+            });
+        })
+        // Check chkSurety Amount
+        DOM.elid('chkSurety').addEventListener('click', () => {
+            let flightName = DOM.elid('buyFlightName').value;
+            let passengerAddress = DOM.elid('buyPassengerAddress').value;
+            console.log("checkSuretyAmount : " + passengerAddress + ":" +flightName );
+                // Write transaction
+            contract.checkSuretyAmount( passengerAddress,  flightName, function(error, result) {
+                display('checkSuretyAmount', 'checkSuretyAmount', [ { label: 'checkSuretyAmount Status', error: error, value: result} ]);
+                console.log("checkSuretyAmount error : " + error);
+                console.log("checkSuretyAmount result : " + result);
+            });
+        })
+        
+        // Withdraw Flight Surety
+        DOM.elid('withdraw').addEventListener('click', () => {
+            let flightName = DOM.elid('buyFlightName').value;
+            let passengerAddress = DOM.elid('buyPassengerAddress').value;
+           console.log("wd : " + passengerAddress + ":" +flightName );
+             // Write transaction
+            contract.withdraw( passengerAddress,  flightName, function(error, result) {
+                display('withdraw', 'withdraw', [ { label: 'withdraw Status', error: error, value: result} ]);
+                console.log("wd error : " + error);
+                console.log("wd result : " + result);
+            });
+        })
+
+    });
+    
+
         // trigger flight status
         DOM.elid('checkFlightStatus').addEventListener('click', () => {
             let flightName = DOM.elid('checkFlightName').value;
@@ -50,27 +91,14 @@ import './flightsurety.css';
             });
         })
 
-        // Withdraw Flight Surety
-        DOM.elid('withdraw').addEventListener('click', () => {
-            let wdPassengerAddress = DOM.elid('wdPassengerAddress').value;
-            let wdFlightName = DOM.elid('wdFlightName').value;
-           
-             // Write transaction
-            contract.withdraw( wdPassengerAddress,  wdFlightName, function(error, result) {
-                display('withdraw', 'withdraw', [ { label: 'withdraw Status', error: error, value: result} ]);
-                console.log("wd error : " + error);
-                console.log("wd result : " + result);
-            });
-        })
-
-    });
-    
 
 })();
 
 
 function display(title, description, results) {
     let displayDiv = DOM.elid("display-wrapper");
+    displayDiv.innerHTML = "";
+
     let section = DOM.section();
     section.appendChild(DOM.h2(title));
     section.appendChild(DOM.h5(description));

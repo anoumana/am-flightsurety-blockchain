@@ -90,6 +90,32 @@ export default class Contract {
             });
     }
 
+    checkInsAmount(passengerAddress, flightName, callback) {
+        let self = this;
+        console.log("in chk ins contract");
+        let airlines = self.flightAirlineMap.get(flightName);
+        let timestamp = self.flightTimestampMap.get(flightName);
+        console.log("in chk ins contract : " + airlines +" : " + timestamp + " : " + flightName);
+        self.flightSuretyApp.methods.getInsuranceAmount(passengerAddress, airlines, flightName, timestamp)
+            .call({from: passengerAddress,  gas:4712300, gasprice: 100000 }, 
+            (error,result) => { console.log("after call :" + result);
+                callback(error, result);
+            });
+    }
+
+    checkSuretyAmount(passengerAddress, flightName, callback) {
+        let self = this;
+        console.log("in checkSuretyAmount contract");
+        let airlines = self.flightAirlineMap.get(flightName);
+        let timestamp = self.flightTimestampMap.get(flightName);
+        console.log("in checkSuretyAmount contract : " + airlines +" : " + timestamp + " : " + flightName);
+        self.flightSuretyApp.methods.getCreditedInsuranceAmount(passengerAddress, airlines, flightName, timestamp)
+            .call({from: passengerAddress,  gas:4712300, gasprice: 100000 }, 
+            (error,result) => { console.log("after call :" + result);
+                callback(error, result);
+            });
+    }
+
     checkFlightStatus(flightName, callback) {
         let self = this;
         let airlines = self.flightAirlineMap.get(flightName);
@@ -104,9 +130,13 @@ export default class Contract {
         
     }
 
-    withdraw( wdPassengerAddress, wdAirlineAddress,  wdFlightName, wdFlightTime, callback) {
+    withdraw( wdPassengerAddress, wdFlightName, callback) {
         let self = this;
-        self.flightSuretyApp.methods.withdraw( wdAirlineAddress,  wdFlightName, wdFlightTime)
+        let airlines = self.flightAirlineMap.get(wdFlightName);
+        let timestamp = self.flightTimestampMap.get(wdFlightName);
+        console.log("in withdraw contract : " + wdPassengerAddress + " : " +  airlines +" : " + timestamp + " : " + wdFlightName);
+
+        self.flightSuretyApp.methods.withdraw( wdPassengerAddress,  airlines, wdFlightName, timestamp)
             .send({from: wdPassengerAddress,  gas:4712300, gasprice: 100000 }, 
             (error,result) => {
                 callback(error, result);
