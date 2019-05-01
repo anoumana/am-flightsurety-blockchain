@@ -26,6 +26,20 @@ contract FlightSuretyApp {
 
     address private contractOwner;          // Account used to deploy contract
 
+    struct Airlines {
+        bool isRegistered;
+        address accountAddress;
+        string airlinesName;
+    }
+
+    uint8 private PERCENTAGE_OF_AUTHORIZERS = 50;
+    uint8 private INITIAL_AUTHORIZER_COUNT = 2;
+
+    address[] registeredAirlineList = new address[](0); 
+    mapping(address => Airlines) registeredAirlines; 
+    mapping(address => address[]) registrationAuthorizers; // Airlines that have authorized the registration
+
+
     FlightSuretyData flightSuretyData;
 
     event contractLog(string logMsg, address airline, string flight, uint256 timestamp, uint8 status, uint8 index);
@@ -58,6 +72,12 @@ contract FlightSuretyApp {
         _;
     }
 
+    modifier requireAlreadyNotRegistered(address newAirlines)
+    {
+        require(!registeredAirlines[newAirlines].isRegistered, "Airlines is already registered"  );
+        _;
+    }
+
     function toString(address x) internal pure returns (string memory) {
         bytes memory b = new bytes(20);
         for (uint i = 0; i < 20; i++)
@@ -74,25 +94,32 @@ contract FlightSuretyApp {
     *
     */
     constructor
-                                ( address dataContract
+                                (   address dataContract,
+                                    string memory firstAirlines,
+                                    address firstAirlineAddress 
                                 ) 
                                 public 
     {
         contractOwner = msg.sender;
         flightSuretyData = FlightSuretyData(dataContract);
+
+        registeredAirlineList.push(firstAirlineAddress);
+        registeredAirlines[firstAirlineAddress]  =  Airlines({
+            isRegistered: true,
+            accountAddress: firstAirlineAddress,
+            airlinesName: firstAirlines
+        });
+        //success = true;
     }
 
     /********************************************************************************************/
     /*                                       UTILITY FUNCTIONS                                  */
     /********************************************************************************************/
 
-    function getRegisteredAirlines( ) external view returns (address[] memory _registeredAirlineList){
-        return flightSuretyData.getRegisteredAirlines();
+    function isAirlineRegistered(address airlineAddress) external view  returns (bool status){
+        status = registeredAirlines[airlineAddress].isRegistered;
     }
 
-    function isAirlineRegistered(address airlineAddress) external view returns (bool status){
-        return flightSuretyData.isAirlineRegistered(airlineAddress);
-    }
     function isOperational() 
                             external 
                             view 
@@ -123,6 +150,9 @@ contract FlightSuretyApp {
         return contractOwner;
     }
 
+    function getRegisteredAirlines( ) external view  returns (address[] memory _registeredAirlineList){
+        return registeredAirlineList;
+    }
 
     /********************************************************************************************/
     /*                                     SMART CONTRACT FUNCTIONS                             */
@@ -133,16 +163,74 @@ contract FlightSuretyApp {
     * @dev Add an airline to the registration queue
     *
     */   
+    /////////////////////////
+
     function registerAirline
                             (   
                                 string  airlinesName,
                                 address newAirlines // airlines that needs to be registered
                             )
                             external
-                            returns( int votesNeeded)
+                           requireIsOperational
+                           requireAlreadyNotRegistered (newAirlines)  // require airlines is not already registered
+                           returns( int votesNeeded)
     {
-        return flightSuretyData.registerAirline(airlinesName, newAirlines);
+        // if the # of registered airlines is less than 5, one of the registered airlines can register another airlines
+        bool authorized = false;
+        votesNeeded = 0;
+        //success = false;
+        address[] memory authorizers =  registrationAuthorizers[newAirlines];
+
+        if(registeredAirlineList.length <= INITIAL_AUTHORIZER_COUNT){
+
+           //// emit contractLog("in registerAirline lt initialAuthCount ",  newAirlines,  "",  0, uint8(registeredAirlineList.length),  INITIAL_AUTHORIZER_COUNT);
+
+            if(registeredAirlines[tx.origin].isRegistered)
+            {
+                authorized = true;
+            }
+        }
+        else { // half of the registered airlines should authorize the registration
+
+           emit contractLog("in registerAirline gt initialAuthCount ",  newAirlines,  "",  0, 
+           uint8(registeredAirlineList.length),  INITIAL_AUTHORIZER_COUNT);
+
+           if(authorizers.length >= registeredAirlineList.length.mul(PERCENTAGE_OF_AUTHORIZERS).div(100)){
+                authorized = true;               
+           }
+           else{
+               registrationAuthorizers[newAirlines].push(tx.origin);
+               votesNeeded  = int(registeredAirlineList.length.mul(PERCENTAGE_OF_AUTHORIZERS).div(100) - (authorizers.length+1));
+           emit contractLog("in registerAirline gt initialAuthCount ",  newAirlines,  "",  0, 
+                uint8(registeredAirlineList.length), uint8(authorizers.length+1));
+
+           }
+
+        } 
+        if(authorized){
+            registeredAirlineList.push(newAirlines);
+            registeredAirlines[newAirlines]  =  Airlines({
+                isRegistered: true,
+                accountAddress: newAirlines,
+                airlinesName: airlinesName
+            });
+            //success = true;
+           //emit contractLog("in registerAirline before calling data ",  newAirlines,  "",  0, 
+           //uint8(registeredAirlineList.length),  uint8(authorizers.length+1));
+            flightSuretyData.registerAirline(airlinesName, newAirlines);
+          // emit contractLog("in registerAirline after calling data",  newAirlines,  "",  0, 
+           //uint8(registeredAirlineList.length),  uint8(authorizers.length+1));
+
+            registrationAuthorizers[newAirlines] = new address[](0);
+           //emit RegisteredAirline(airlinesName, newAirlines);
+            votesNeeded = 0;
+        }
+            return votesNeeded;
     }
+
+
+
+    /////////////////////////
 
     function fund
                             (   
@@ -210,19 +298,6 @@ contract FlightSuretyApp {
     return flightSuretyData.withdraw( passenger, airlines, flight, timestamp);
 }
 
-   /**
-    * @dev Register a future flight for insuring.
-    *
-    */  
-    function registerFlight
-                                (
-                                )
-                                external
-                                pure
-    {
-
-    }
-    
    /**
     * @dev Called after oracle has updated flight status
     *
@@ -382,8 +457,7 @@ contract FlightSuretyApp {
         emit OracleReport(airline, flight, timestamp, statusCode );
         emit contractLog("in submitOracle after oracleRep emit",  airline,  flight,  timestamp,  statusCode,  index);
 
-        //if (oracleResponses[key].responses[statusCode].length >= MIN_RESPONSES) 
-        if (respLength >= 3) 
+        if (oracleResponses[key].responses[statusCode].length >= MIN_RESPONSES) 
         {
 
         emit contractLog("in submitOracle in if cond",  airline,  flight,  timestamp,  statusCode,  index);
@@ -462,9 +536,7 @@ contract FlightSuretyData
 {
     function isOperational() external  view  returns(bool);
     function setOperatingStatus( bool ) external;
-    function registerAirline( string  airlinesName, address newAirlines ) external returns( int votesNeeded);
-    function isAirlineRegistered(address airlineAddress) external view returns (bool status) ;
-    function getRegisteredAirlines( ) external view  returns (address[] );
+    function registerAirline( string  airlinesName, address newAirlines ) external ;
 
     function buy(  address passenger, address airlines, string flight, uint256 timestamp) external  payable returns (uint256);
     function getInsuranceAmount(address passenger, address airlines, string flight, uint256 timestamp) external  payable returns (uint256);

@@ -96,7 +96,7 @@ contract('Flight Surety Tests', async (accounts) => {
     let airline2 = accounts[2];
 
      try {
-        let address = await config.flightSuretyData.getRegisteredAirlines.call();
+        let address = await config.flightSuretyApp.getRegisteredAirlines.call();
         console.log("contract account address : " + address[0]  + ": " + address[1]);
             
     } catch (error) {
@@ -108,18 +108,18 @@ contract('Flight Surety Tests', async (accounts) => {
         
     //    bool  success;
     //   int votes;
-       let result = await config.flightSuretyData.registerAirline("Second Airlines", airline2, {from:config.testAddresses[1]});
+       let result = await config.flightSuretyApp.registerAirline("Second Airlines", airline2, {from:config.testAddresses[2]});
         //console.log(success + " votes :" + votes);
         console.log("result : " + result[0] + ": " + result[1]);
     }
     catch(e) {
         console.log("error : " + e);
     }
-   let result1 = await config.flightSuretyData.isAirlineRegistered.call(airline2); 
+   let result1 = await config.flightSuretyApp.isAirlineRegistered.call(airline2); 
    console.log("is reg :" + result1);
 
    try {
-        let address1 = await config.flightSuretyData.getRegisteredAirlines.call();
+        let address1 = await config.flightSuretyApp.getRegisteredAirlines.call();
         console.log("contract account address : " + address1[0]  + ": " + address1[1]);
             
     } catch (error) {

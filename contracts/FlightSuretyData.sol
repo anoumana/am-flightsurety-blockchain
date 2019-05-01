@@ -37,11 +37,11 @@ contract FlightSuretyData {
 
     mapping(string => Flight) private flights;
 
-    address[] registeredAirlineList = new address[](0); 
+    //address[] registeredAirlineList = new address[](0); 
     mapping(address => Airlines) registeredAirlines; 
     mapping(address => Flight) registeredFlights; 
 
-    mapping(address => address[]) registrationAuthorizers; // Airlines that have authorized the registration
+    //mapping(address => address[]) registrationAuthorizers; // Airlines that have authorized the registration
 
     mapping(address => bool)  authorizedCallers;
 
@@ -65,22 +65,23 @@ contract FlightSuretyData {
     *      The deploying account becomes contractOwner
     */
     constructor
-                                ( string memory firstAirlines,
-                                    address firstAirlineAddress
+                                ( 
+                                    string memory firstAirlines,
+                                    address firstAirlineAddress 
                                 ) 
                                 public 
     {
         contractOwner = tx.origin;
         //authorizedCallers[contractOwner] = 1;
         operational = true;
-        registeredAirlineList.push(firstAirlineAddress);
+//        registeredAirlineList.push(firstAirlineAddress);
         registeredAirlines[firstAirlineAddress]  =  Airlines({
             isRegistered: true,
             accountAddress: firstAirlineAddress,
             airlinesName: firstAirlines,
             insuranceFund: 0
         });
-        emit RegisteredAirline( firstAirlines, firstAirlineAddress);   // First airline registered
+        // emit RegisteredAirline( firstAirlines, firstAirlineAddress);   // First airline registered
 
     }
 
@@ -111,11 +112,11 @@ contract FlightSuretyData {
         _;
     }
 
-    modifier requireAlreadyNotRegistered(address newAirlines)
-    {
-        require(!registeredAirlines[newAirlines].isRegistered, "Airlines is already registered"  );
-        _;
-    }
+    // modifier requireAlreadyNotRegistered(address newAirlines)
+    // {
+    //     require(!registeredAirlines[newAirlines].isRegistered, "Airlines is already registered"  );
+    //     _;
+    // }
 
     modifier requireAuthorizedCaller()
     {
@@ -156,8 +157,6 @@ contract FlightSuretyData {
     {
         delete authorizedCallers[authCaller];
     }
-
-
     /**
     * @dev Get operating status of contract
     *
@@ -187,17 +186,11 @@ contract FlightSuretyData {
         operational = mode;
     }
 
-    function isAirlineRegistered(address airlineAddress) external view requireAuthorizedCaller returns (bool status){
-        status = registeredAirlines[airlineAddress].isRegistered;
-    }
 
     /********************************************************************************************/
     /*                                     SMART CONTRACT FUNCTIONS                             */
     /********************************************************************************************/
 
-    function getRegisteredAirlines( ) external view requireAuthorizedCaller returns (address[] memory _registeredAirlineList){
-        return registeredAirlineList;
-    }
 
     function getRegisteredAirlineFund(address airline ) external view requireAuthorizedCaller returns (uint){
         return registeredAirlines[airline].insuranceFund;
@@ -216,44 +209,17 @@ contract FlightSuretyData {
                             external
                            requireIsOperational
                            requireAuthorizedCaller
-                           requireAlreadyNotRegistered (newAirlines)  // require airlines is not already registered
-                           returns( int votesNeeded)
+//                           requireAlreadyNotRegistered (newAirlines)  // require airlines is not already registered
+//                           returns( int votesNeeded)
     {
-        // if the # of registered airlines is less than 5, one of the registered airlines can register another airlines
-        bool authorized = false;
-        votesNeeded = 0;
-        //success = false;
-        if(registeredAirlineList.length <= 2){
-            if(registeredAirlines[tx.origin].isRegistered)
-            {
-                authorized = true;
-            }
-        }
-        else { // half of the registered airlines should authorize the registration
-           address[] memory authorizers =  registrationAuthorizers[newAirlines];
-           if(authorizers.length >= registeredAirlineList.length.div(2)){
-                authorized = true;               
-           }
-           else{
-               registrationAuthorizers[newAirlines].push(tx.origin);
-               votesNeeded  = int(registeredAirlineList.length.div(2) - (authorizers.length+1));
-           }
-
-        } 
-        if(authorized){
-            registeredAirlineList.push(newAirlines);
+//            registeredAirlineList.push(newAirlines);
             registeredAirlines[newAirlines]  =  Airlines({
                 isRegistered: true,
                 accountAddress: newAirlines,
                 airlinesName: airlinesName, 
                 insuranceFund: 0
             });
-            //success = true;
-           registrationAuthorizers[newAirlines] = new address[](0);
            emit RegisteredAirline(airlinesName, newAirlines);
-            votesNeeded = 0;
-        }
-            return votesNeeded;
     }
 
 
