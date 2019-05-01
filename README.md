@@ -16,7 +16,7 @@ To install, download or clone the repo, then:
 To run truffle tests:
 
 `truffle test ./test/flightSurety.js`
-`truffle test ./test/oracles.js`
+
 
 To use the dapp:
 
@@ -28,6 +28,7 @@ To view dapp:
 `http://localhost:8000`
 
 ## Develop Server
+### Server initializes the first two flights and funds the first flight, also registers the oracles
 
 `npm run server`
 `truffle test ./test/oracles.js`
@@ -39,6 +40,16 @@ To build dapp for prod:
 
 Deploy the contents of the ./dapp folder
 
+## Dapp - usage 
+Put a passenger wallet address, choose a flight and buy insurance by pressing the "Buy Insurance" button
+Check the insurance amount of that same passenger by clicking the "Check Insurance" button
+
+Click the "Check Flight Status " Button to check the flight status - this triggers the oracles to submit their responses to the contract. And if there are at least 3 oracles submitting the late airlines, it will automatically trigger the creditInsurees method to credit all the passengers who have bought insurance for that flight
+
+Now click the "Check Surety" Button to see that it has the surety credited for that passenger
+Click on "Withdraw" button to get that credit transfered to the passenger's wallet
+
+You can check to see if the insurance and surety have been put back to 0 by clicking those buttons.
 
 ## Resources
 
