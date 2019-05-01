@@ -33,7 +33,7 @@ contract FlightSuretyApp {
     }
 
     uint8 private PERCENTAGE_OF_AUTHORIZERS = 50;
-    uint8 private INITIAL_AUTHORIZER_COUNT = 2;
+    uint8 private INITIAL_AUTHORIZER_COUNT = 5;
 
     address[] registeredAirlineList = new address[](0); 
     mapping(address => Airlines) registeredAirlines; 
@@ -463,10 +463,10 @@ contract FlightSuretyApp {
         emit contractLog("in submitOracle in if cond",  airline,  flight,  timestamp,  statusCode,  index);
 
             emit FlightStatusInfo(airline, flight, timestamp, statusCode);
-            //close the response
-            oracleResponses[key].isOpen = false;
             // Handle flight status as appropriate
             processFlightStatus(airline, flight, timestamp, statusCode);
+            //cleanup
+            delete oracleResponses[key];
         }
     }
 

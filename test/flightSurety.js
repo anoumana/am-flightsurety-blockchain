@@ -204,40 +204,40 @@ it('(airline) needs 50% of registered airlines to register ', async () => {
     } catch (error) { console.log("contract account 4error : " + error );}
 
 
-    // //5th
-    // try {
-    //     result = await config.flightSuretyData.registerAirline("Fifth Airlines", accounts[5], {from:config.testAddresses[1]});
-    //     console.log("result : " + result[0] + ": " + result[1]);
-    // }
-    // catch(e) {
-    //     console.log("error : " + e);
-    // }
-    // result1 = await config.flightSuretyData.isAirlineRegistered.call(accounts[5]); 
-    // console.log("is reg :" + result1);
+    //5th
+    try {
+        result = await config.flightSuretyData.registerAirline("Fifth Airlines", accounts[5], {from:config.testAddresses[1]});
+        console.log("result : " + result[0] + ": " + result[1]);
+    }
+    catch(e) {
+        console.log("error : " + e);
+    }
+    result1 = await config.flightSuretyApp.isAirlineRegistered.call(accounts[5]); 
+    console.log("is reg :" + result1);
 
-    // try {
-    //     let address1 = await config.flightSuretyData.getRegisteredAirlines.call();
-    //     console.log("contract account address : " + address1[0]  + ": " + address1[1] + ": " + address1[2] 
-    //                                                + " : "  + address1[3] + " : "  + address1[4] + " : "  + address1[5] );
-    // } catch (error) { console.log("contract account5 error : " + error );}
+    try {
+        let address1 = await config.flightSuretyApp.getRegisteredAirlines.call();
+        console.log("contract account address : " + address1[0]  + ": " + address1[1] + ": " + address1[2] 
+                                                   + " : "  + address1[3] + " : "  + address1[4] + " : "  + address1[5] );
+    } catch (error) { console.log("contract account5 error : " + error );}
 
 
-    // //6th
-    // try {
-    //     let result = await config.flightSuretyData.registerAirline("Fifth Airlines", accounts[6], {from:config.testAddresses[1]});
-    //     console.log("result : " + result[0] + ": " + result[1]);
-    // }
-    // catch(e) {
-    //     console.log("error : " + e);
-    // }
-    // result1 = await config.flightSuretyData.isAirlineRegistered.call(accounts[6]); 
-    // console.log("is reg :" + result1);
+    //6th
+    try {
+        let result = await config.flightSuretyApp.registerAirline("Fifth Airlines", accounts[6], {from:config.testAddresses[1]});
+        console.log("result : " + result[0] + ": " + result[1]);
+    }
+    catch(e) {
+        console.log("error : " + e);
+    }
+    result1 = await config.flightSuretyApp.isAirlineRegistered.call(accounts[6]); 
+    console.log("is reg :" + result1);
 
-    // try {
-    //     let address1 = await config.flightSuretyData.getRegisteredAirlines.call();
-    //     console.log("contract account address : " + address1[0]  + ": " + address1[1] + ": " + address1[2] 
-    //                                                + " : "  + address1[3] + " : "  + address1[4] + " : "  + address1[5] );
-    // } catch (error) { console.log("contract account 6 error : " + error );}
+    try {
+        let address1 = await config.flightSuretyApp.getRegisteredAirlines.call();
+        console.log("contract account address : " + address1[0]  + ": " + address1[1] + ": " + address1[2] 
+                                                   + " : "  + address1[3] + " : "  + address1[4] + " : "  + address1[5] );
+    } catch (error) { console.log("contract account 6 error : " + error );}
 
 });
  
